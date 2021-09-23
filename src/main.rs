@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use actix_web::{App, Error, HttpServer, Result, dev::{self, ServiceFactory}, web};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_tracing::TracingMiddleware;
@@ -27,14 +29,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub static APP_CONFIG: AppConfig = AppConfig {
-    pokemon_url: "https://pokeapi.co",
-    translations_url: "https://api.funtranslations.com",
+    pokemon_url: Cow::Borrowed("https://pokeapi.co"),
+    translations_url: Cow::Borrowed("https://api.funtranslations.com"),
 };
 
 #[derive(Clone)]
 pub struct AppConfig {
-    pokemon_url: &'static str,
-    translations_url: &'static str,
+    pokemon_url: Cow<'static, str>,
+    translations_url: Cow<'static, str>,
 }
 
 pub fn new_service(
