@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use actix_web::{App, Error, HttpServer, Result, dev::{self, ServiceFactory}, web};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_tracing::TracingMiddleware;
@@ -23,25 +21,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::builder().build()?;
     let client = ClientBuilder::new(client).with(TracingMiddleware).build();
 
+    let app_config = AppConfig {
+        pokemon_url: config.pokemon_api,
+        translations_url: config.translations_url,
+    };
+
     // Create a http server and await the future
     Ok(
-        HttpServer::new(move || new_service(client.clone(), &APP_CONFIG))
+        HttpServer::new(move || new_service(client.clone(), &app_config))
             .bind(("0.0.0.0", config.port))?
             .run()
             .await?,
     )
 }
 
-/// Default [`AppConfig`] with the production api endpoints configured
-pub static APP_CONFIG: AppConfig = AppConfig {
-    pokemon_url: Cow::Borrowed("https://pokeapi.co"),
-    translations_url: Cow::Borrowed("https://api.funtranslations.com"),
-};
-
 #[derive(Clone)]
 pub struct AppConfig {
-    pokemon_url: Cow<'static, str>,
-    translations_url: Cow<'static, str>,
+    pokemon_url: String,
+    translations_url: String,
 }
 
 /// Create a new actix_web App Service.

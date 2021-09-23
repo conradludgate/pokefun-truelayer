@@ -9,7 +9,7 @@ use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientBuilder;
 use reqwest_tracing::TracingMiddleware;
 
-use crate::{api::PokemonInfo, new_service, AppConfig, APP_CONFIG};
+use crate::{api::PokemonInfo, new_service, AppConfig};
 
 use std::sync::Once;
 
@@ -38,11 +38,13 @@ async fn create_test_app(
 }
 
 lazy_static! {
-    static ref MOCK_CONFIG: AppConfig = {
-        AppConfig {
-            pokemon_url: mockito::server_url().into(),
-            translations_url: mockito::server_url().into(),
-        }
+    static ref MOCK_CONFIG: AppConfig = AppConfig {
+        pokemon_url: mockito::server_url().into(),
+        translations_url: mockito::server_url().into(),
+    };
+    static ref PROD_CONFIG: AppConfig = AppConfig {
+        pokemon_url: "https://pokeapi.co".into(),
+        translations_url: "https://api.funtranslations.com".into(),
     };
 }
 
@@ -99,7 +101,7 @@ async fn get_pokemon_translated_legendary_mocked() {
         .with_body_from_file("replays/mewtwo.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/yoda")
+    let _m2 = mock("GET", "/translate/yoda")
         .match_body("text=It+was+created+by+a+scientist+after+years+of+horrific+gene+splicing+and+DNA+engineering+experiments.")
         .with_status(200)
         .with_header("content-type", "application/json")
@@ -134,7 +136,7 @@ async fn get_pokemon_translated_cave_mocked() {
         .with_body_from_file("replays/zubat.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/yoda")
+    let _m2 = mock("GET", "/translate/yoda")
         .match_body("text=Forms+colonies+in+perpetually+dark+places.+Uses+ultrasonic+waves+to+identify+and+approach+targets.")
         .with_status(200)
         .with_header("content-type", "application/json")
@@ -169,7 +171,7 @@ async fn get_pokemon_translated_other_mocked() {
         .with_body_from_file("replays/ditto.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/shakespeare")
+    let _m2 = mock("GET", "/translate/shakespeare")
         .match_body("text=It+can+freely+recombine+its+own+cellular+structure+to+transform+into+other+life-forms.")
         .with_status(200)
         .with_header("content-type", "application/json")
@@ -221,7 +223,7 @@ async fn get_pokemon_translated_bad_translation_mocked() {
         .with_body_from_file("replays/mewtwo.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/yoda")
+    let _m2 = mock("GET", "/translate/yoda")
             .match_body("text=It+was+created+by+a+scientist+after+years+of+horrific+gene+splicing+and+DNA+engineering+experiments.")
             .with_status(500)
             .create();
@@ -247,7 +249,7 @@ async fn get_pokemon_translated_bad_translation_mocked() {
 #[actix_rt::test]
 #[ignore]
 async fn get_pokemon_ok() {
-    let app = create_test_app(&APP_CONFIG).await;
+    let app = create_test_app(&PROD_CONFIG).await;
 
     let req = test::TestRequest::with_uri("/pokemon/mewtwo")
         .method(Method::GET)
@@ -270,7 +272,7 @@ async fn get_pokemon_ok() {
 #[actix_rt::test]
 #[ignore]
 async fn get_pokemon_not_found() {
-    let app = create_test_app(&APP_CONFIG).await;
+    let app = create_test_app(&PROD_CONFIG).await;
 
     let req = test::TestRequest::with_uri("/pokemon/mewthree")
         .method(Method::GET)
@@ -284,7 +286,7 @@ async fn get_pokemon_not_found() {
 #[actix_rt::test]
 #[ignore]
 async fn get_pokemon_translated_legendary() {
-    let app = create_test_app(&APP_CONFIG).await;
+    let app = create_test_app(&PROD_CONFIG).await;
 
     let req = test::TestRequest::with_uri("/pokemon/translated/mewtwo")
         .method(Method::GET)
@@ -307,7 +309,7 @@ async fn get_pokemon_translated_legendary() {
 #[actix_rt::test]
 #[ignore]
 async fn get_pokemon_translated_cave() {
-    let app = create_test_app(&APP_CONFIG).await;
+    let app = create_test_app(&PROD_CONFIG).await;
 
     let req = test::TestRequest::with_uri("/pokemon/translated/zubat")
         .method(Method::GET)
@@ -330,7 +332,7 @@ async fn get_pokemon_translated_cave() {
 #[actix_rt::test]
 #[ignore]
 async fn get_pokemon_translated_other() {
-    let app = create_test_app(&APP_CONFIG).await;
+    let app = create_test_app(&PROD_CONFIG).await;
 
     let req = test::TestRequest::with_uri("/pokemon/translated/ditto")
         .method(Method::GET)
@@ -353,7 +355,7 @@ async fn get_pokemon_translated_other() {
 #[actix_rt::test]
 #[ignore]
 async fn get_pokemon_translated_not_found() {
-    let app = create_test_app(&APP_CONFIG).await;
+    let app = create_test_app(&PROD_CONFIG).await;
 
     let req = test::TestRequest::with_uri("/pokemon/translated/mewthree")
         .method(Method::GET)

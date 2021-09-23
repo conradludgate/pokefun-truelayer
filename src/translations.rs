@@ -15,7 +15,7 @@ pub async fn translate(
     text: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     Ok(client
-        .post(req.url_for("translations", &[translation])?)
+        .get(req.url_for("translations", &[translation])?)
         .form(&Request { text })
         .send()
         .await?

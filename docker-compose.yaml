@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  pokefun:
+    build: .
+    image: ghcr.io/conradludgate/pokefun-truelayer:latest
+    ports:
+      - "8080:8080"
+    environment:
+      POKEMON_API: http://pokemon/
+      TRANSLATIONS_API: http://translations/
+    networks:
+      - varnish
+
+  varnish:
+    image: varnish:latest
+    volumes:
+      - "./default.vcl:/etc/varnish/default.vcl:ro"
+      - "varnish:/var/lib/varnish"
+    networks:
+      varnish:
+        aliases:
+          - pokemon
+          - translations
+
+networks:
+  varnish:
+
+volumes:
+  varnish:
