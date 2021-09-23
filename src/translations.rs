@@ -2,6 +2,12 @@ use actix_web::{HttpRequest, Result};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 
+/// Make a POST request for a fun-translation.
+///
+/// # Errors:
+/// Will return [`Err`] if the http connection could not be made,
+/// if the API responded with an error status code
+/// or if the response body contained invalid JSON.
 pub async fn translate(
     client: &ClientWithMiddleware,
     req: &HttpRequest,

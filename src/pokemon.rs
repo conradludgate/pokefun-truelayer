@@ -3,6 +3,14 @@ use reqwest::StatusCode;
 use reqwest_middleware::ClientWithMiddleware;
 use serde::Deserialize;
 
+/// Make a GET request to the pokeapi for the provided pokemon species
+///
+/// # Errors:
+/// Will return [`Err`] if the http connection could not be made,
+/// if the API responded with an error status code
+/// or if the response body contained invalid JSON.
+///
+/// Will return [`Ok(None)`] if the API returned a 404 status code
 pub async fn get_species(
     client: &ClientWithMiddleware,
     req: &HttpRequest,

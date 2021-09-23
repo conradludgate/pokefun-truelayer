@@ -1,5 +1,5 @@
 use crate::{pokemon, translations::translate};
-use actix_web::{error::ErrorInternalServerError, web, HttpRequest, Result};
+use actix_web::{error::ErrorInternalServerError, get, web, HttpRequest, Result};
 use reqwest_middleware::ClientWithMiddleware;
 use serde::{Deserialize, Serialize};
 use tracing::warn;
@@ -48,6 +48,7 @@ impl From<pokemon::Species> for PokemonInfo {
     }
 }
 
+#[get("/pokemon/{pokemon_name}")]
 pub async fn get_pokemon(
     client: web::Data<ClientWithMiddleware>,
     req: HttpRequest,
@@ -60,6 +61,7 @@ pub async fn get_pokemon(
     }
 }
 
+#[get("/pokemon/translated/{pokemon_name}")]
 pub async fn get_pokemon_translated(
     client: web::Data<ClientWithMiddleware>,
     req: HttpRequest,
@@ -98,7 +100,7 @@ mod tests {
             "yoda"
         );
     }
-    
+
     #[test]
     fn pokemon_info_translation_cave() {
         assert_eq!(
@@ -112,7 +114,7 @@ mod tests {
             "yoda"
         );
     }
-    
+
     #[test]
     fn pokemon_info_translation_shakespeare() {
         assert_eq!(

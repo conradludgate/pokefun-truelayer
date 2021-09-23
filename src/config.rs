@@ -6,6 +6,7 @@ pub struct Config {
     pub port: u16,
 }
 
+/// Parse the environment/arguments into [`Config`]
 pub fn parse() -> Result<Config, clap::Error> {
     Config::from_args_safe()
 }
