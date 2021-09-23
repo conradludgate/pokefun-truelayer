@@ -5,6 +5,7 @@ use reqwest_tracing::TracingMiddleware;
 mod api;
 mod config;
 mod pokemon;
+mod translations;
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -27,11 +28,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 pub static APP_CONFIG: AppConfig = AppConfig {
     pokemon_url: "https://pokeapi.co",
+    translations_url: "https://api.funtranslations.com",
 };
 
 #[derive(Clone)]
 pub struct AppConfig {
     pokemon_url: &'static str,
+    translations_url: &'static str,
 }
 
 pub fn new_service(
@@ -53,7 +56,12 @@ pub fn new_service(
             "pokemon_species",
             api_config.pokemon_url.to_string() + "/api/v2/pokemon-species/{pokemon_name}/",
         )
+        .external_resource(
+            "translations",
+            api_config.translations_url.to_string() + "/translate/{translation}",
+        )
         .route("/pokemon/{pokemon_name}", web::get().to(api::get_pokemon))
+        .route("/pokemon/translated/{pokemon_name}", web::get().to(api::get_pokemon_translated))
 }
 
 #[cfg(test)]
