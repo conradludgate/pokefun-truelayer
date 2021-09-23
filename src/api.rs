@@ -80,3 +80,50 @@ pub async fn get_pokemon_translated(
         Err(err) => Err(ErrorInternalServerError(err)),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::api::PokemonInfo;
+
+    #[test]
+    fn pokemon_info_translation_rare() {
+        assert_eq!(
+            PokemonInfo {
+                name: "mewtwo".into(),
+                description: "".into(),
+                is_legendary: true,
+                habitat: "rare".into(),
+            }
+            .translation(),
+            "yoda"
+        );
+    }
+    
+    #[test]
+    fn pokemon_info_translation_cave() {
+        assert_eq!(
+            PokemonInfo {
+                name: "zubat".into(),
+                description: "".into(),
+                is_legendary: false,
+                habitat: "cave".into(),
+            }
+            .translation(),
+            "yoda"
+        );
+    }
+    
+    #[test]
+    fn pokemon_info_translation_shakespeare() {
+        assert_eq!(
+            PokemonInfo {
+                name: "ditto".into(),
+                description: "".into(),
+                is_legendary: false,
+                habitat: "urban".into(),
+            }
+            .translation(),
+            "shakespeare"
+        );
+    }
+}
