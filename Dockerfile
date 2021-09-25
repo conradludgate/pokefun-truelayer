@@ -12,7 +12,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release
 
-FROM scratch AS runtime
+FROM debian:buster-20210902-slim AS runtime
 WORKDIR /app
 COPY --from=builder /app/target/release/pokefun-truelayer /usr/local/bin
 

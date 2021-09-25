@@ -4,7 +4,7 @@ use actix_web::{
     test, Error,
 };
 use lazy_static::lazy_static;
-use mockito::mock;
+use mockito::{Matcher, mock};
 use reqwest::{Client, StatusCode};
 use reqwest_middleware::ClientBuilder;
 use reqwest_tracing::TracingMiddleware;
@@ -99,8 +99,8 @@ async fn get_pokemon_translated_legendary_mocked() {
         .with_body_from_file("replays/mewtwo.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/yoda")
-        .match_body("text=It+was+created+by+a+scientist+after+years+of+horrific+gene+splicing+and+DNA+engineering+experiments.")
+    let _m2 = mock("GET", "/translate/yoda")
+        .match_query(Matcher::UrlEncoded("text".into(), "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.".into()))
         .with_status(200)
         .with_header("content-type", "application/json")
         .with_body_from_file("replays/mewtwo_yoda.json")
@@ -134,8 +134,8 @@ async fn get_pokemon_translated_cave_mocked() {
         .with_body_from_file("replays/zubat.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/yoda")
-        .match_body("text=Forms+colonies+in+perpetually+dark+places.+Uses+ultrasonic+waves+to+identify+and+approach+targets.")
+    let _m2 = mock("GET", "/translate/yoda")
+        .match_query(Matcher::UrlEncoded("text".into(), "Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.".into()))
         .with_status(200)
         .with_header("content-type", "application/json")
         .with_body_from_file("replays/zubat_yoda.json")
@@ -169,8 +169,8 @@ async fn get_pokemon_translated_other_mocked() {
         .with_body_from_file("replays/ditto.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/shakespeare")
-        .match_body("text=It+can+freely+recombine+its+own+cellular+structure+to+transform+into+other+life-forms.")
+    let _m2 = mock("GET", "/translate/shakespeare")
+        .match_query(Matcher::UrlEncoded("text".into(), "It can freely recombine its own cellular structure to transform into other life-forms.".into()))
         .with_status(200)
         .with_header("content-type", "application/json")
         .with_body_from_file("replays/ditto_shakespeare.json")
@@ -221,8 +221,8 @@ async fn get_pokemon_translated_bad_translation_mocked() {
         .with_body_from_file("replays/mewtwo.json")
         .create();
 
-    let _m2 = mock("POST", "/translate/yoda")
-            .match_body("text=It+was+created+by+a+scientist+after+years+of+horrific+gene+splicing+and+DNA+engineering+experiments.")
+    let _m2 = mock("GET", "/translate/yoda")
+            .match_query(Matcher::UrlEncoded("text".into(), "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.".into()))
             .with_status(500)
             .create();
 
